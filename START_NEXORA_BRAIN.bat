@@ -12,40 +12,46 @@ set "OLLAMA_EXE="
 for /f "delims=" %%I in ('where ollama 2^>nul') do if not defined OLLAMA_EXE set "OLLAMA_EXE=%%I"
 if not defined OLLAMA_EXE if exist "%LOCALAPPDATA%\Programs\Ollama\ollama.exe" set "OLLAMA_EXE=%LOCALAPPDATA%\Programs\Ollama\ollama.exe"
 
-if not defined OLLAMA_EXE (
-  echo Ollama was not found. Install and open Ollama, then run this file again.
-  pause
-  exit /b 1
-)
+if not defined OLLAMA_EXE goto ollama_missing
 
 powershell -NoProfile -Command "try { Invoke-RestMethod 'http://127.0.0.1:11434/api/tags' -TimeoutSec 2 | Out-Null; exit 0 } catch { exit 1 }"
-if errorlevel 1 (
-  echo Starting Ollama...
-  start "" /B "%OLLAMA_EXE%" serve
-  set /a tries=0
-  :waitollama
-  timeout /t 2 /nobreak >nul
-  powershell -NoProfile -Command "try { Invoke-RestMethod 'http://127.0.0.1:11434/api/tags' -TimeoutSec 2 | Out-Null; exit 0 } catch { exit 1 }"
-  if errorlevel 1 (
-    set /a tries+=1
-    if %tries% GEQ 10 (
-      echo Ollama did not start. Open Ollama manually and try again.
-      pause
-      exit /b 1
-    )
-    goto waitollama
-  )
-)
+if not errorlevel 1 goto ollama_ready
 
+echo Starting Ollama...
+start "" /B "%OLLAMA_EXE%" serve
+set /a tries=0
+
+:waitollama
+timeout /t 2 /nobreak >nul
+powershell -NoProfile -Command "try { Invoke-RestMethod 'http://127.0.0.1:11434/api/tags' -TimeoutSec 2 | Out-Null; exit 0 } catch { exit 1 }"
+if not errorlevel 1 goto ollama_ready
+set /a tries+=1
+if %tries% GEQ 10 goto ollama_failed
+goto waitollama
+
+:ollama_ready
+echo.
 echo Installing or checking NEXORA Local Brain dependencies...
 py -m pip install -r requirements-local-brain.txt
-if errorlevel 1 (
-  echo Dependency installation failed. Check Python and internet access.
-  pause
-  exit /b 1
-)
+if errorlevel 1 goto install_failed
 
 echo.
 echo Starting NEXORA Local Brain. Keep this window open.
 py nexora_local_brain.py
 pause
+exit /b 0
+
+:ollama_missing
+echo Ollama was not found. Install and open Ollama, then run this file again.
+pause
+exit /b 1
+
+:ollama_failed
+echo Ollama did not start. Open Ollama manually and try again.
+pause
+exit /b 1
+
+:install_failed
+echo Dependency installation failed. Check Python and internet access.
+pause
+exit /b 1
