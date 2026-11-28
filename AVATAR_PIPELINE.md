@@ -6,7 +6,7 @@ Use five full-body 3D companions with role-themed models, natural idle animation
 ## Live baseline
 - Hatchable project: `proj_LfgsvYRQRBpg`
 - Live URL: https://nexora-ai-nv88.hatchable.site
-- Live version: **v69**
+- Live version: **v70**
 - Renderer: `public/avatar3d.js`
 - Runtime: Three.js + GLTFLoader + three-vrm (VRM files remain supported).
 
