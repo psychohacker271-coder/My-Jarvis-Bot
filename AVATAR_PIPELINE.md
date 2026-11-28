@@ -6,7 +6,7 @@ Use five full-body 3D companions with role-themed models, natural idle animation
 ## Live baseline
 - Hatchable project: `proj_LfgsvYRQRBpg`
 - Live URL: https://nexora-ai-nv88.hatchable.site
-- Live version: **v68**
+- Live version: **v69**
 - Renderer: `public/avatar3d.js`
 - Runtime: Three.js + GLTFLoader + three-vrm (VRM files remain supported).
 
@@ -22,7 +22,7 @@ The Hatchable project stores these files under `public/models/`:
 | RIYA | `/models/riya-human.glb` | `RIYA` | Female gentle, supportive companion |
 
 ### Structural validation (v68)
-All five files returned HTTP 200 after deployment and passed GLB header/length checks:
+All five files returned HTTP 200 after v69 deployment and passed GLB header/length checks:
 - GLB magic: `glTF`; version: 2.
 - Each has a skinned mesh, skeleton nodes and one animation named `Idle`.
 - Each has 34 facial morph targets, including eye blinks and visemes.
