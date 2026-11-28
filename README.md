@@ -1,50 +1,51 @@
 # NEXORA AI
 
-A voice-first personal AI companion project. The live web/PWA application is hosted on Hatchable; this repository branch records the project overview and implementation notes.
+A voice-first personal AI companion project. The live web/PWA application is hosted on Hatchable; this repository branch records project documentation and the local Windows brain helper.
 
 ## Live app
 https://nexora-ai-nv88.hatchable.site
 
-- Current live Hatchable version: **v66**
+- Current Hatchable source baseline before the next deploy: **v67**.
 - Hatchable project: `proj_LfgsvYRQRBpg`
-- Hatchable is the deployment source of truth. This GitHub branch is project documentation, not the live application source or an APK.
+- Hatchable is the deployment source of truth. This GitHub branch is project documentation and local helper code, not the live app source or an APK.
 
 ## Companion characters
-- **KAI** — warm, friendly male best-friend style.
-- **RYAN** — clear, confident male tech-friend and coding helper.
-- **MAYA** — same-age anime-style study-mentor friend; explains school topics patiently and playfully.
-- **ANGEL** — same-age anime-style classmate friend; sweet, caring, playful and gently teasing.
-- **RIYA** — extra-caring, warm anime-style AI companion friend; supportive, expressive and occasionally playfully grumpy, without romantic-partner framing.
+- **KAI** — warm, friendly male best-friend style; gamer-themed full-body model.
+- **RYAN** — analytical male tech friend; cyberpunk/hacker-themed full-body model.
+- **MAYA** — same-age study-mentor friend; patient, cheerful, clear explanations.
+- **ANGEL** — same-age classmate friend; playful, kind and curious.
+- **RIYA** — extra-caring AI companion friend; gentle, thoughtful and supportive.
 - **NEXORA** — central controller that routes voice commands to the requested companion.
 
 All characters are AI companions, not real people. Character conversations should remain age-appropriate, respectful and non-possessive.
 
-Each companion has a separate speech profile (voice preference, voice selection slot, rate and pitch). The browser build selects from voices installed on the user's device; availability and naturalness depend on Android/Windows/browser speech engines. This is a device-voice fallback, not a bundled premium neural voice pack.
+## Full-body model assets
+The Hatchable project contains five local GLB 2.0 files under `public/models/`: `kai-human.glb`, `ryan-human.glb`, `maya-human.glb`, `angel-human.glb` and `riya-human.glb`. All five returned HTTP 200 and passed GLB 2.0 header/length checks; each has a skinned mesh and an `Idle` animation. The renderer update switches to these same-origin local assets rather than relying on remote GitHub raw URLs. Visual appearance/framing still needs user review on Android, and original asset provenance/license must be confirmed before redistribution.
+
+## Voice profiles
+NEXORA and each companion have separate pitch/rate profiles. The browser selects from voices installed on the device and uses gender-aware voice selection where possible. Actual voice names and quality depend on Android/Windows speech engines; if a device exposes only one suitable voice, pitch/rate can differ but the underlying voice may remain the same. Guaranteed unique neural voices require a bundled local TTS runtime and individually licensed voice models.
+
+## Free local AI brain
+This branch now includes `nexora_local_brain.py`, `requirements-local-brain.txt` and `LOCAL_BRAIN_SETUP.md`. The FastAPI bridge streams replies from a local Ollama model in the NDJSON format expected by the NEXORA frontend. It binds to localhost, checks an access token and allows the NEXORA app origin. No paid AI API key is required. The laptop must run Ollama and the bridge; Android access additionally needs a trusted HTTPS tunnel. The brain is not connected until the user starts it and NEXORA's connection test succeeds.
 
 ## Current foundations
-- Five selectable companion profiles: KAI, RYAN, MAYA, ANGEL and RIYA.
-- Three.js avatar scene with VRM loading, humanoid expressions and MToon-compatible rendering.
-- Five documented VRoid sample model assignments; only the selected companion model is loaded at a time.
+- Five selectable companion profiles and local full-body GLB models.
+- Three.js renderer with GLTF/VRM loader support, skeletons, idle animation and speech movement.
 - Browser speech recognition, wake phrase handling and device-dependent speech synthesis.
-- Companion-specific speech settings and voice selection from device-installed voices.
 - Local-first chat and memory storage, JSON backup/restore.
-- Optional connection to a laptop-hosted local AI service.
+- Optional laptop-hosted Ollama brain bridge.
 - Signed-in account sync endpoint for chats and memories.
 - Installable PWA shell.
 - Safe Automation Command Center currently records and classifies tasks; it does not yet execute OS or third-party account actions.
 
-## Voice quality roadmap
-For consistent, higher-quality offline neural voices across Android and Windows, integrate a local TTS runtime such as Piper or Kokoro and bundle/download appropriately licensed voice models. This requires model downloads, storage, CPU/RAM testing and platform-specific packaging. No paid voice API is required for a local runtime, but model licenses and redistribution terms must be checked individually.
-
 ## Important limitations
-- This repository branch is project documentation, not a compiled Android APK or Windows installer.
+- This repository branch is not a compiled Android APK or Windows installer.
 - Browser voice recognition may need internet and the app open; background wake is not guaranteed.
-- Browser/device TTS voices vary by device. The five profiles apply distinct settings and choose different available voices where possible; guaranteed studio-quality unique voices require a bundled neural TTS runtime.
-- The anime VRM assets are starter models, not bespoke final designs. The v66 renderer deployment has not yet been visually verified on the user's Android device.
+- Device TTS voice availability varies. Current profiles are distinct settings, not five bundled neural voices.
+- Full-body GLB assets have been structurally validated, but each character still needs visual approval on Android.
+- Local AI requires Ollama and the separate bridge to be running. The app reports a disconnected brain rather than presenting a scripted fallback as an AI answer.
 - YouTube and other app shortcuts open official sites; they do not yet automate uploads or control signed-in accounts.
-- The local AI brain needs a separately installed local model/runtime. No paid API is required for that local mode.
-- Sample character model licensing must be checked before redistribution.
-- Android native source mentioned in project notes still needs a build and real-device verification.
+- Local GLB asset provenance/license must be confirmed before redistribution.
 
 ## Development
-Use Hatchable to inspect, test and deploy app source. Use GitHub for project documentation, history, issue tracking and code review. Mirror verified implementation status into this documentation branch without treating it as the app's source of truth.
+Use Hatchable to inspect, test and deploy app source. Use GitHub for project documentation, the local brain helper, history and code review. This branch is not the live app's source of truth.
