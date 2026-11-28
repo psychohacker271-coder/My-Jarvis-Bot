@@ -8,7 +8,7 @@ This helper connects NEXORA to a local Ollama model without a paid AI API key an
 - A local Ollama model installed. The default is `qwen3.5:0.8b`; if yours has a different name, set `OLLAMA_MODEL` before starting.
 
 ## 2. Download the files
-Download `nexora_local_brain.py` and `requirements-local-brain.txt` from this GitHub repository into the same folder.
+Download these four files from this GitHub repository into the same folder: `nexora_local_brain.py`, `nexora_agents.py`, `requirements-local-brain.txt` and `START_NEXORA_BRAIN.bat`. The `nexora_agents.py` module is required by the brain server.
 
 ## 3. Install and start
 For one-click startup on Windows, double-click `START_NEXORA_BRAIN.bat`. It checks Ollama, starts its local service if needed, installs the Python dependencies, and launches the brain server. Keep the terminal window open.
@@ -30,7 +30,10 @@ In NEXORA → Settings:
 
 Keep both Ollama and the Local Brain terminal running while chatting. To use distinct character voices, enable **Distinct online neural voices** in NEXORA Settings. This sends the spoken reply text to Microsoft's online Edge TTS service using different Indian voice IDs for each character. It is optional and OFF by default; if it is off, NEXORA uses device-installed browser voices.
 
-## 5. Android phone
+## 5. What the agents can do
+The local runtime exposes NEXORA, KAI, RYAN, MAYA, ANGEL and RIYA as separate role-configured agents. NEXORA can consult up to two specialists in one turn. Safe local tools include arithmetic, local date/time, agent roster and installed Ollama model status. Tool use depends on the selected Ollama model supporting tool calling; if it does not, normal local chat still works.
+
+## 6. Android phone
 The phone cannot use the laptop's `127.0.0.1` address. For phone access, configure a trusted HTTPS tunnel to the laptop's local port 8765, then paste that HTTPS address and the same token into NEXORA Settings. Do not expose port 8765 directly to the public internet.
 
 ## Troubleshooting
