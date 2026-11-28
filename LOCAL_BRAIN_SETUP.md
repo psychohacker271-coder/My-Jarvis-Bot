@@ -11,7 +11,9 @@ This helper connects NEXORA to a local Ollama model without a paid AI API key an
 Download `nexora_local_brain.py` and `requirements-local-brain.txt` from this GitHub repository into the same folder.
 
 ## 3. Install and start
-Open PowerShell in that folder and run:
+For one-click startup on Windows, double-click `START_NEXORA_BRAIN.bat`. It checks Ollama, starts its local service if needed, installs the Python dependencies, and launches the brain server. Keep the terminal window open.
+
+Or open PowerShell in that folder and run:
 
 ```powershell
 py -m pip install -r requirements-local-brain.txt
