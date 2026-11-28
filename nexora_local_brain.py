@@ -253,12 +253,11 @@ async def chat(request: Request, x_annu_token: str | None = Header(default=None)
 EDGE_VOICE_MAP = {
     "nexora": {"en": "en-IN-NeerjaNeural", "hi": "hi-IN-SwaraNeural", "rate": "+0%", "pitch": "+0Hz"},
     "kai":    {"en": "en-IN-PrabhatNeural", "hi": "hi-IN-MadhurNeural", "rate": "+8%", "pitch": "+3Hz"},
-    "ryan":   {"en": "en-IN-AaravNeural", "hi": "hi-IN-MadhurNeural", "rate": "-3%", "pitch": "-2Hz"},
-    "maya":   {"en": "en-IN-AashiNeural", "hi": "hi-IN-SwaraNeural", "rate": "-5%", "pitch": "+1Hz"},
-    "angel":  {"en": "en-IN-NeerjaNeural", "hi": "hi-IN-SwaraNeural", "rate": "+7%", "pitch": "+4Hz"},
+    "ryan":   {"en": "en-IN-KunalNeural", "hi": "hi-IN-KunalNeural", "rate": "-3%", "pitch": "-2Hz"},
+    "maya":   {"en": "en-IN-AnanyaNeural", "hi": "hi-IN-AnanyaNeural", "rate": "-5%", "pitch": "+1Hz"},
+    "angel":  {"en": "en-IN-KavyaNeural", "hi": "hi-IN-KavyaNeural", "rate": "+7%", "pitch": "+4Hz"},
     "riya":   {"en": "en-IN-AashiNeural", "hi": "hi-IN-SwaraNeural", "rate": "-2%", "pitch": "-1Hz"},
 }
-
 
 def _contains_devanagari(value: str) -> bool:
     return any("\\u0900" <= char <= "\\u097f" for char in value)
