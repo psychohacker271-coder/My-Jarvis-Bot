@@ -8,6 +8,12 @@ if not exist "nexora_local_brain.py" (
   exit /b 1
 )
 
+if not exist "nexora_agents.py" (
+  echo Missing nexora_agents.py. Download all NEXORA setup files into this folder first.
+  pause
+  exit /b 1
+)
+
 set "OLLAMA_EXE="
 for /f "delims=" %%I in ('where ollama 2^>nul') do if not defined OLLAMA_EXE set "OLLAMA_EXE=%%I"
 if not defined OLLAMA_EXE if exist "%LOCALAPPDATA%\Programs\Ollama\ollama.exe" set "OLLAMA_EXE=%LOCALAPPDATA%\Programs\Ollama\ollama.exe"
