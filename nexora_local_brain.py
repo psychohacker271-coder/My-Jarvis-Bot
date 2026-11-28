@@ -17,10 +17,11 @@ import secrets
 from typing import Any
 
 import httpx
+import edge_tts
 import uvicorn
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, Response
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3.5:0.8b")
@@ -152,6 +153,41 @@ async def chat(request: Request, x_annu_token: str | None = Header(default=None)
             yield event({"type": "error", "message": f"Local brain error: {type(exc).__name__}: {exc}"})
 
     return StreamingResponse(stream(), media_type="application/x-ndjson")
+
+
+VOICE_MAP = {
+    "nexora": "en-IN-KavyaNeural",
+    "kai": "hi-IN-MadhurNeural",
+    "ryan": "en-IN-PrabhatNeural",
+    "maya": "hi-IN-SwaraNeural",
+    "angel": "en-IN-NeerjaNeural",
+    "riya": "en-IN-AashiNeural",
+}
+
+
+@app.post("/tts")
+async def text_to_speech(request: Request, x_annu_token: str | None = Header(default=None)):
+    check_token(x_annu_token)
+    body = await request.json()
+    text = str(body.get("text", "")).strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Text is required")
+    if len(text) > 5000:
+        raise HTTPException(status_code=413, detail="Speech text is too long")
+    companion = str(body.get("companion", "nexora")).lower()
+    voice = VOICE_MAP.get(companion, VOICE_MAP["nexora"])
+    try:
+        communicate = edge_tts.Communicate(text, voice)
+        audio_parts = []
+        async for chunk in communicate.stream():
+            if chunk.get("type") == "audio":
+                audio_parts.append(chunk.get("data", b""))
+        audio = b"".join(audio_parts)
+        if not audio:
+            raise RuntimeError("TTS returned no audio")
+        return Response(content=audio, media_type="audio/mpeg", headers={"Cache-Control": "no-store"})
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Neural TTS unavailable: {type(exc).__name__}: {exc}")
 
 
 if __name__ == "__main__":
