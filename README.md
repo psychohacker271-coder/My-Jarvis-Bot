@@ -5,7 +5,7 @@ A voice-first personal AI companion project. The live web/PWA application is hos
 ## Live app
 https://nexora-ai-nv88.hatchable.site
 
-- Current live Hatchable version: **v69**
+- Current live Hatchable version: **v70**
 - Hatchable project: `proj_LfgsvYRQRBpg`
 - Hatchable is the deployment source of truth. This GitHub branch is project documentation and local helper code, not the live app source or an APK.
 
@@ -26,7 +26,7 @@ The Hatchable project contains five local GLB 2.0 files under `public/models/`: 
 NEXORA and each companion have separate pitch/rate profiles. The browser selects from voices installed on the device and uses gender-aware voice selection where possible. Actual voice names and quality depend on Android/Windows speech engines; if a device exposes only one suitable voice, pitch/rate can differ but the underlying voice may remain the same. Guaranteed unique neural voices require a bundled local TTS runtime and individually licensed voice models.
 
 ## Free local AI brain
-This branch includes `nexora_local_brain.py`, `requirements-local-brain.txt` and `LOCAL_BRAIN_SETUP.md`. The FastAPI bridge streams replies from a local Ollama model in the NDJSON format expected by the NEXORA frontend. It also offers optional per-character Microsoft Edge neural TTS voices through the same token-protected laptop bridge. Neural TTS is OFF by default because spoken reply text is sent to an online speech service; the user must enable it in NEXORA Settings. No paid AI API key is required. The laptop must run Ollama and the bridge; Android access additionally needs a trusted HTTPS tunnel. The brain is not connected until the user starts it and NEXORA's connection test succeeds.
+This branch includes `nexora_local_brain.py`, `requirements-local-brain.txt`, `START_NEXORA_BRAIN.bat` and `LOCAL_BRAIN_SETUP.md`. The FastAPI bridge streams replies from a local Ollama model in the NDJSON format expected by the NEXORA frontend. It also offers optional per-character Microsoft Edge neural TTS voices through the same token-protected laptop bridge. Neural TTS is OFF by default because spoken reply text is sent to an online speech service; the user must enable it in NEXORA Settings. No paid AI API key is required. The laptop must run Ollama and the bridge; Android access additionally needs a trusted HTTPS tunnel. The Windows launcher checks/starts Ollama, installs dependencies and starts the local server. The brain is not connected until the user starts it and NEXORA's connection test succeeds.
 
 ## Current foundations
 - Five selectable companion profiles and local full-body GLB models.
@@ -44,6 +44,7 @@ This branch includes `nexora_local_brain.py`, `requirements-local-brain.txt` and
 - Device TTS voice availability varies. Current profiles are distinct settings, not five bundled neural voices.
 - Full-body GLB assets are structurally verified and served successfully, but each character still needs visual approval on Android.
 - Local AI requires Ollama and the separate bridge to be running. The app reports a disconnected brain rather than presenting a scripted fallback as an AI answer.
+- The free hosting account has a daily bandwidth cap; after it is reached, public asset/API requests pause until the quota resets.
 - YouTube and other app shortcuts open official sites; they do not yet automate uploads or control signed-in accounts.
 - Local GLB asset provenance/license must be confirmed before redistribution.
 
