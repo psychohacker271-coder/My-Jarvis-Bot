@@ -28,15 +28,7 @@ In NEXORA → Settings:
 - Required laptop access token: paste the token printed in PowerShell.
 - Tap **Test connection**.
 
-Keep both Ollama and the Local Brain terminal running while chatting. NEXORA has six distinct character voice profiles. By default it uses free Edge TTS voices. For ElevenLabs-quality multilingual voices, you can optionally configure an ElevenLabs API key as a Windows environment variable **on your own laptop** before starting the server:
-
-```powershell
-$env:ELEVENLABS_API_KEY="YOUR_KEY"
-py nexora_local_brain.py
-```
-
-Do not paste the key into NEXORA chat, browser code, GitHub, or a screenshot. ElevenLabs synthesis uses your account's plan credits and may incur usage limits or charges; check your plan before enabling it. When configured, the server uses the selected ElevenLabs voice for Hindi, Hinglish and English with `eleven_multilingual_v2`. If the key is missing, invalid, or the service is temporarily unavailable, the server falls back to free Edge TTS so speech can continue.
-
+Keep both Ollama and the Local Brain terminal running while chatting. NEXORA uses free Microsoft Edge neural voices through the `edge-tts` Python package. No ElevenLabs account, API key, paid subscription, or API credit is needed. The server selects a character-specific Indian voice and adjusts its speaking rate and pitch. Hindi text uses Hindi voices; English and roman-script Hinglish use Indian-English voices. An internet connection is required for Edge TTS. This is free to use, but it is an online third-party service and its availability can change.
 ## 5. What the agents can do
 The local runtime exposes NEXORA, KAI, RYAN, MAYA, ANGEL and RIYA as separate role-configured agents. NEXORA can consult up to two specialists in one turn. Safe local tools include arithmetic, local date/time, agent roster and installed Ollama model status. Tool use depends on the selected Ollama model supporting tool calling; if it does not, normal local chat still works.
 
