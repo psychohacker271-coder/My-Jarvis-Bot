@@ -1,6 +1,6 @@
 # NEXORA Local Brain setup (Windows)
 
-This helper connects NEXORA to a local Ollama model without a paid AI API key.
+This helper connects NEXORA to a local Ollama model without a paid AI API key and can optionally provide distinct online neural voices per character.
 
 ## 1. Requirements
 - Windows laptop with Ollama installed and running.
@@ -18,7 +18,7 @@ py -m pip install -r requirements-local-brain.txt
 py nexora_local_brain.py
 ```
 
-The terminal prints a one-time access token. Keep it private.
+The terminal prints a one-time access token. Keep it private. The requirements file also installs the optional Edge TTS client.
 
 ## 4. Connect NEXORA
 In NEXORA → Settings:
@@ -26,7 +26,7 @@ In NEXORA → Settings:
 - Required laptop access token: paste the token printed in PowerShell.
 - Tap **Test connection**.
 
-Keep both Ollama and the Local Brain terminal running while chatting.
+Keep both Ollama and the Local Brain terminal running while chatting. To use distinct character voices, enable **Distinct online neural voices** in NEXORA Settings. This sends the spoken reply text to Microsoft's online Edge TTS service using different Indian voice IDs for each character. It is optional and OFF by default; if it is off, NEXORA uses device-installed browser voices.
 
 ## 5. Android phone
 The phone cannot use the laptop's `127.0.0.1` address. For phone access, configure a trusted HTTPS tunnel to the laptop's local port 8765, then paste that HTTPS address and the same token into NEXORA Settings. Do not expose port 8765 directly to the public internet.
