@@ -5,7 +5,7 @@ A voice-first personal AI companion project. The live web/PWA application is hos
 ## Live app
 https://nexora-ai-nv88.hatchable.site
 
-- Current live Hatchable version: **v68**
+- Current live Hatchable version: **v69**
 - Hatchable project: `proj_LfgsvYRQRBpg`
 - Hatchable is the deployment source of truth. This GitHub branch is project documentation and local helper code, not the live app source or an APK.
 
