@@ -270,7 +270,7 @@ EDGE_VOICE_MAP = {
 
 
 def _contains_devanagari(value: str) -> bool:
-    return any("\\u0900" <= char <= "\\u097f" for char in value)
+    return any("\u0900" <= char <= "\u097f" for char in value)
 
 
 async def _edge_fallback_speech(text: str, companion: str) -> bytes:
