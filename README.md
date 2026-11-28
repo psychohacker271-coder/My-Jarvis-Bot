@@ -26,14 +26,14 @@ The Hatchable project contains five local GLB 2.0 files under `public/models/`: 
 NEXORA and each companion have separate pitch/rate profiles. The browser selects from voices installed on the device and uses gender-aware voice selection where possible. Actual voice names and quality depend on Android/Windows speech engines; if a device exposes only one suitable voice, pitch/rate can differ but the underlying voice may remain the same. Guaranteed unique neural voices require a bundled local TTS runtime and individually licensed voice models.
 
 ## Free local AI brain
-This branch includes `nexora_local_brain.py`, `requirements-local-brain.txt`, `START_NEXORA_BRAIN.bat` and `LOCAL_BRAIN_SETUP.md`. The FastAPI bridge streams replies from a local Ollama model in the NDJSON format expected by the NEXORA frontend. It also offers optional per-character Microsoft Edge neural TTS voices through the same token-protected laptop bridge. Neural TTS is OFF by default because spoken reply text is sent to an online speech service; the user must enable it in NEXORA Settings. No paid AI API key is required. The laptop must run Ollama and the bridge; Android access additionally needs a trusted HTTPS tunnel. The Windows launcher checks/starts Ollama, installs dependencies and starts the local server. The brain is not connected until the user starts it and NEXORA's connection test succeeds.
+This branch includes `nexora_local_brain.py`, `nexora_agents.py`, `requirements-local-brain.txt`, `START_NEXORA_BRAIN.bat`, `AGENT_RUNTIME.md` and `LOCAL_BRAIN_SETUP.md`. The FastAPI bridge streams replies from a local Ollama model in the NDJSON format expected by the NEXORA frontend. A lightweight local multi-agent runtime gives all six profiles role-specific instructions and tool permissions; NEXORA can consult KAI, RYAN, MAYA, ANGEL or RIYA, and agents can use safe local calculator/time/agent-list tools. No separate paid agent service or per-message API is involved. It also offers optional per-character Microsoft Edge neural TTS voices through the same token-protected laptop bridge. Neural TTS is OFF by default because spoken reply text is sent to an online speech service; the user must enable it in NEXORA Settings. No paid AI API key is required. The laptop must run Ollama and the bridge; Android access additionally needs a trusted HTTPS tunnel. The Windows launcher checks/starts Ollama, installs dependencies and starts the local server. The brain is not connected until the user starts it and NEXORA's connection test succeeds.
 
 ## Current foundations
 - Five selectable companion profiles and local full-body GLB models.
 - Three.js renderer with GLTF/VRM loader support, skeletons, idle animation and speech facial morphs.
 - Browser speech recognition, wake phrase handling and device-dependent speech synthesis.
 - Local-first chat and memory storage, JSON backup/restore.
-- Optional laptop-hosted Ollama brain bridge.
+- Optional laptop-hosted Ollama brain bridge with local specialist-agent delegation and safe tool calling.
 - Signed-in account sync endpoint for chats and memories.
 - Installable PWA shell.
 - Safe Automation Command Center currently records and classifies tasks; it does not yet execute OS or third-party account actions.
@@ -44,6 +44,7 @@ This branch includes `nexora_local_brain.py`, `requirements-local-brain.txt`, `S
 - Device TTS voice availability varies. Current profiles are distinct settings, not five bundled neural voices.
 - Full-body GLB assets are structurally verified and served successfully, but each character still needs visual approval on Android.
 - Local AI requires Ollama and the separate bridge to be running. The app reports a disconnected brain rather than presenting a scripted fallback as an AI answer.
+- All six agents share the selected local model; they are distinct role-configured agents, not six independently trained models. Tool use and specialist delegation require an Ollama model that supports tool calling; otherwise the bridge falls back to normal chat.
 - The free hosting account has a daily bandwidth cap; after it is reached, public asset/API requests pause until the quota resets.
 - YouTube and other app shortcuts open official sites; they do not yet automate uploads or control signed-in accounts.
 - Local GLB asset provenance/license must be confirmed before redistribution.
