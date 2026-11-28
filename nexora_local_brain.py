@@ -247,14 +247,44 @@ async def chat(request: Request, x_annu_token: str | None = Header(default=None)
 
     return StreamingResponse(stream(), media_type="application/x-ndjson")
 
-VOICE_MAP = {
-    "nexora": "en-IN-KavyaNeural",
-    "kai": "hi-IN-MadhurNeural",
-    "ryan": "en-IN-PrabhatNeural",
-    "maya": "hi-IN-SwaraNeural",
-    "angel": "en-IN-NeerjaNeural",
-    "riya": "en-IN-AashiNeural",
+# ElevenLabs voice IDs are distinct per character. The multilingual model can
+# speak Hindi, Hinglish and English without switching the character identity.
+ELEVENLABS_VOICE_MAP = {
+    "nexora": "Cb9z94TwCr5GzieU2cs2",  # Vidya — clear, intelligent assistant
+    "kai": "M3WCUXTJRAS6EDSrpH2f",     # Guddu — upbeat, playful male character
+    "ryan": "3aVSYngN97kYGwRG442x",    # Shubham — natural Hindi male
+    "maya": "FK0rLKn1gdFjYpbmOFYc",    # Kanika — warm, patient female
+    "angel": "2lLgWMtK52t50e2eLKAk",   # Geet — bright, expressive female
+    "riya": "ersfAjrmSe390RN4j9pI",    # Malti — warm, supportive female
 }
+
+# Free online Edge TTS fallback when no ElevenLabs key is configured.
+EDGE_VOICE_MAP = {
+    "nexora": ("en-IN-KavyaNeural", "hi-IN-SwaraNeural"),
+    "kai": ("en-IN-PrabhatNeural", "hi-IN-MadhurNeural"),
+    "ryan": ("en-IN-PrabhatNeural", "hi-IN-MadhurNeural"),
+    "maya": ("en-IN-NeerjaNeural", "hi-IN-SwaraNeural"),
+    "angel": ("en-IN-NeerjaNeural", "hi-IN-SwaraNeural"),
+    "riya": ("en-IN-KavyaNeural", "hi-IN-SwaraNeural"),
+}
+
+
+def _contains_devanagari(value: str) -> bool:
+    return any("\\u0900" <= char <= "\\u097f" for char in value)
+
+
+async def _edge_fallback_speech(text: str, companion: str) -> bytes:
+    english_voice, hindi_voice = EDGE_VOICE_MAP.get(companion, EDGE_VOICE_MAP["nexora"])
+    voice = hindi_voice if _contains_devanagari(text) else english_voice
+    communicate = edge_tts.Communicate(text, voice)
+    parts = []
+    async for chunk in communicate.stream():
+        if chunk.get("type") == "audio":
+            parts.append(chunk.get("data", b""))
+    audio = b"".join(parts)
+    if not audio:
+        raise RuntimeError("Fallback TTS returned no audio")
+    return audio
 
 
 @app.post("/tts")
@@ -267,19 +297,54 @@ async def text_to_speech(request: Request, x_annu_token: str | None = Header(def
     if len(text) > 5000:
         raise HTTPException(status_code=413, detail="Speech text is too long")
     companion = str(body.get("companion", "nexora")).lower()
-    voice = VOICE_MAP.get(companion, VOICE_MAP["nexora"])
+    if companion not in ELEVENLABS_VOICE_MAP:
+        companion = "nexora"
+
+    # ElevenLabs is opt-in because API usage consumes the account's plan credits.
+    # Never place the key in browser code or the NEXORA app settings.
+    elevenlabs_key = os.getenv("ELEVENLABS_API_KEY", "").strip()
+    if elevenlabs_key:
+        try:
+            async with httpx.AsyncClient(timeout=45.0) as client:
+                response = await client.post(
+                    f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_MAP[companion]}",
+                    params={"output_format": "mp3_44100_128"},
+                    headers={
+                        "xi-api-key": elevenlabs_key,
+                        "Content-Type": "application/json",
+                        "Accept": "audio/mpeg",
+                    },
+                    json={
+                        "text": text,
+                        "model_id": "eleven_multilingual_v2",
+                        "voice_settings": {
+                            "stability": 0.48,
+                            "similarity_boost": 0.78,
+                            "style": 0.35,
+                            "use_speaker_boost": True,
+                        },
+                    },
+                )
+                response.raise_for_status()
+                return Response(
+                    content=response.content,
+                    media_type="audio/mpeg",
+                    headers={"Cache-Control": "no-store", "X-Voice-Provider": "elevenlabs"},
+                )
+        except httpx.HTTPError:
+            # Keep voice working if the key, quota or network is temporarily unavailable.
+            pass
+
     try:
-        communicate = edge_tts.Communicate(text, voice)
-        audio_parts = []
-        async for chunk in communicate.stream():
-            if chunk.get("type") == "audio":
-                audio_parts.append(chunk.get("data", b""))
-        audio = b"".join(audio_parts)
-        if not audio:
-            raise RuntimeError("TTS returned no audio")
-        return Response(content=audio, media_type="audio/mpeg", headers={"Cache-Control": "no-store"})
+        audio = await _edge_fallback_speech(text, companion)
+        provider = "edge-tts-fallback" if elevenlabs_key else "edge-tts-free"
+        return Response(
+            content=audio,
+            media_type="audio/mpeg",
+            headers={"Cache-Control": "no-store", "X-Voice-Provider": provider},
+        )
     except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Neural TTS unavailable: {type(exc).__name__}: {exc}")
+        raise HTTPException(status_code=502, detail=f"Character TTS unavailable: {type(exc).__name__}: {exc}")
 
 
 if __name__ == "__main__":
